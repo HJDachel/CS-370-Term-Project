@@ -16,6 +16,7 @@ const server = express();
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
+server.use(express.text());
 
 /** method to test express */
 server.get("/test", (req, res) => {
