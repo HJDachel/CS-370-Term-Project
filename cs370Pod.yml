@@ -5,6 +5,6 @@ metadata:
 spec:
   containers:
   - name: riverapi
-    image: hjdachel\cs370proj
+    image: hjdachel/cs370proj
     ports:
     - containerPort: 3000
