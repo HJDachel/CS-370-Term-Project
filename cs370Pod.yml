@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: pod
+metadata:
+  name: cs370pod
+spec:
+  containers:
+  - name: riverapi
+    image: hjdachel\cs370proj
+    ports:
+    - containerPort: 3000
