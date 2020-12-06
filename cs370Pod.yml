@@ -12,14 +12,14 @@ spec:
     ports:
     - containerPort: 3000
   - name: mysql
-      image: mysql:8
-      env:
-      - name: MYSQL_ROOT_PASSWORD 
-        value: password
-      - name: MYSQL_DATABASE
-        value: dates
-      ports:
-      - containerPort: 3306
+    image: mysql:8
+    env:
+    - name: MYSQL_ROOT_PASSWORD 
+      value: password
+    - name: MYSQL_DATABASE
+      value: dates
+    ports:
+    - containerPort: 3306
 ---
 apiVersion: v1
 kind: Service
