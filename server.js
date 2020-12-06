@@ -36,6 +36,7 @@ mysqlConnection.connect((err)=> {
         console.log("Successfully connected to DB");
     }else {
         console.log("Connection to DB failed" + JSON.stringify(err, undefined, 2));
+        process.exit(1);
     }
 });
 
