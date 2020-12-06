@@ -21,6 +21,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 server.use(express.text());
 
+/** connection info for the mysql connection */
 var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root', 
@@ -29,11 +30,27 @@ var mysqlConnection = mysql.createConnection({
     multipleStatements: true
 });
 
+/** attempt to connect to the DB */
 mysqlConnection.connect((err)=> {
     if (!err) {
         console.log("Successfully connected to DB");
     }else {
         console.log("Connection to DB failed" + JSON.stringify(err, undefined, 2));
+    }
+});
+
+
+/** sql string to create the dates table if it doesn't already exist. */
+let createDates = `create table if not exists dates(
+                        date int primary key,
+                        Name varchar(50) not null,
+                        Flow int not null
+                )`;
+
+/** creates dates table if it doesn't already exist. runs every time the server starts. */
+mysqlConnection.query(createDates, function(err, results, fields) {
+    if (err) {
+        console.log(err.message);
     }
 });
 
@@ -52,35 +69,49 @@ server.get("/front", (req, res) => {
 
 /** REST methods. For now just returns request body */
 server.get("/api", (req, res) =>  {
-    // console.log("GET request");
-    // console.log(req.body);
-    // res.send(req.body);
     console.log(req.body.date);
     mysqlConnection.query('SELECT * FROM dates WHERE date=?', [req.body.date], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         }else {
-            console.log(err);
+            console.log(err.message);
         }
     });
 });
 
+/** post request inserts record into table */
 server.post("/api", (req, res) => {
-    console.log("POST request");
-    console.log(req.body);
-    res.json(req.body);
+    mysqlConnection.query(`INSERT INTO dates(date, Name, Flow)
+        VALUES(?,?,?)`, [req.body.date, req.body.name, req.body.flow], (err, rows, fields) => {
+        if (!err) {
+            res.send("Successfully added record!");
+        }else {
+            console.log(err.message);
+            res.send("Error: could not add record!");
+        }
+    });
 });
 
 server.put("/api", (req, res) => {
-    console.log("PUT request");
-    console.log(req.body);
-    res.send(req.body);
+    mysqlConnection.query('UPDATE dates SET Name =?,Flow=? WHERE date=?', [req.body.name, req.body.flow, req.body.date], (err, rows, fields) => {
+        if (!err) {
+            res.send("Successfully updated record!");
+        }else {
+            console.log(err.message);
+            res.send("Error: Unable to update record!");
+        }
+    });
 });
 
 server.delete("/api", (req, res) => {
-    console.log("DELETE request");
-    console.log(req.body);
-    res.send(req.body);
+    mysqlConnection.query('DELETE FROM dates WHERE date =?', [req.body.date], (err, rows, fields) => {
+        if (!err) {
+            res.send("Successfully deleted record!");            
+        }else {
+            console.log(err.message);
+            res.send("Error: Could not delete record!");
+        }
+    });
 });
 
 
